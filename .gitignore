@@ -1,1 +1,16 @@
 /.venv
+
+#Raw data to be excluded
+input/
+*.txt
+*.xml
+*.zip
+
+#Python
+__pycache__/
+*.pyc
+.env
+
+#IDE
+.vscode/
+.idea/
