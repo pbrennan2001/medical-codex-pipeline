@@ -1,46 +1,45 @@
+# Loinc Processor
 import pandas as pd
+import logging
+from pathlib import Path
+from utils.common_functions import save_to_formats
 
 # Load the Loinc.csv file
-loinc = pd.read_csv('input/loinc.csv')
+def load_loinc_data(file_path):
+    try:
+        df = pd.read_csv(file_path)
+        logging.info(f"Successfully loaded data from {file_path}")
+        return df
+    except Exception as e:
+        logging.error(f"Error loading data from {file_path}: {e}")
+        return pd.DataFrame()
 
-# Loinc information
-loinc.info()
+loinc = load_loinc_data('input/loinc.csv')
 
-# Count unique values in the STATUS column
-loinc.STATUS.value_counts()
+# Clean and Standardize the data
+def clean_loinc_data(df):
 
-# Shows first row
-loinc.iloc[0]
+    # Create a smaller dataframe with only the relevant columns
+    loinc_small = df[['LOINC_NUM', 'LONG_COMMON_NAME', 'CLASS', 'STATUS']]
 
-# Show values for LOINC_NUM column (code)
-loinc.LOINC_NUM
+    # Adds a column for the date updated (last_updated)
+    loinc_small['last_updated'] = '2025-09-09'
 
-# Show values for LONG_COMMON_NAME column (description)
-loinc.LONG_COMMON_NAME
+    # Rename columns to standard names
+    loinc_small = loinc_small.rename(columns={
+        'LOINC_NUM': 'code',
+        'LONG_COMMON_NAME': 'description',
+        'CLASS': 'category',
+        'STATUS': 'status',
+        'last_updated': 'last_updated'
+    })
 
-# Show values for STATUS column (status)
-loinc.STATUS
+    # Filter to keep only active codes
+    loinc_small = loinc_small[loinc_small['status'] == 'ACTIVE']
 
-# Show values for CLASS column (category)
-loinc.CLASS
+    return loinc_small
 
-# Create a smaller dataframe with only the relevant columns
-loinc_small = loinc[['LOINC_NUM', 'LONG_COMMON_NAME', 'CLASS', 'STATUS']]
-
-# Adds a column for the date updated (last_updated)
-loinc_small['last_updated'] = '2025-09-09'
-
-loinc_small = loinc_small.rename(columns={
-    'LOINC_NUM': 'code',
-    'LONG_COMMON_NAME': 'description',
-    'CLASS': 'category',
-    'STATUS': 'status',
-    'last_updated': 'last_updated'
-})
-
-# Only keeps active codes
-loinc_small = loinc_small[loinc_small['status'] == 'ACTIVE']
+loinc_small = clean_loinc_data(loinc)
 
 # Save the refined data as a csv file
-from utils.common_functions import save_to_formats
 save_to_formats(loinc_small, 'output/loinc_small')
