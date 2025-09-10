@@ -40,6 +40,7 @@ def clean_loinc_data(df):
     return loinc_small
 
 loinc_small = clean_loinc_data(loinc)
+loinc_small.count()
 
 # Save the refined data as a csv file
 save_to_formats(loinc_small, 'output/loinc_small')
