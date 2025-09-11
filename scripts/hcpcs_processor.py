@@ -35,5 +35,7 @@ def clean_hcpcs_data(df):
     return hcpcs_cleaned
 
 hcpcs_cleaned = clean_hcpcs_data(hcpcs)
-
 hcpcs_cleaned
+
+# Save the refined data as a csv file
+save_to_formats(hcpcs_cleaned, 'output/hcpcs_cleaned')
