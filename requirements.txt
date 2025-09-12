@@ -3,3 +3,4 @@ requests
 logging
 polars
 pathlib
+pyarrow
